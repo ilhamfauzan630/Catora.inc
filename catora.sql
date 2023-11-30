@@ -37,9 +37,12 @@ CREATE TABLE IF NOT EXISTS `catora_users` (
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `username` (`username`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Dumping data for table catora.catora_users: ~0 rows (approximately)
+INSERT INTO `catora_users` (`user_id`, `username`, `password_hash`, `created_at`) VALUES
+	(1, 'this', 'nameme', '2023-11-30 05:28:23'),
+	(3, 'hallo', 'nameme', '2023-11-30 06:13:23');
 
 -- Dumping structure for table catora.catora_user_profiles
 CREATE TABLE IF NOT EXISTS `catora_user_profiles` (
@@ -47,12 +50,12 @@ CREATE TABLE IF NOT EXISTS `catora_user_profiles` (
   `user_id` int DEFAULT NULL,
   `artist_name` varchar(100) DEFAULT NULL,
   `description` text,
-  `profile_image_url` varchar(255) DEFAULT NULL,
-  `background_image_url` varchar(255) DEFAULT NULL,
+  `profile_image_url` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  `background_image_url` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
   PRIMARY KEY (`profile_id`),
   UNIQUE KEY `user_id` (`user_id`),
   CONSTRAINT `catora_user_profiles_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `catora_users` (`user_id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Dumping data for table catora.catora_user_profiles: ~0 rows (approximately)
 
