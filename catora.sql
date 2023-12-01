@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS `artworks` (
   `user_id` int DEFAULT NULL,
   `title` varchar(255) NOT NULL,
   `description` text,
+  `tags` text,
   `image_url` varchar(255) NOT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`artwork_id`),
@@ -37,12 +38,13 @@ CREATE TABLE IF NOT EXISTS `catora_users` (
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `username` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table catora.catora_users: ~0 rows (approximately)
+-- Dumping data for table catora.catora_users: ~2 rows (approximately)
 INSERT INTO `catora_users` (`user_id`, `username`, `password_hash`, `created_at`) VALUES
 	(1, 'this', 'nameme', '2023-11-30 05:28:23'),
-	(3, 'hallo', 'nameme', '2023-11-30 06:13:23');
+	(3, 'hallo', 'nameme', '2023-11-30 06:13:23'),
+	(5, 'dapit', 'disini', '2023-11-30 07:30:28');
 
 -- Dumping structure for table catora.catora_user_profiles
 CREATE TABLE IF NOT EXISTS `catora_user_profiles` (
@@ -55,9 +57,11 @@ CREATE TABLE IF NOT EXISTS `catora_user_profiles` (
   PRIMARY KEY (`profile_id`),
   UNIQUE KEY `user_id` (`user_id`),
   CONSTRAINT `catora_user_profiles_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `catora_users` (`user_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Dumping data for table catora.catora_user_profiles: ~0 rows (approximately)
+INSERT INTO `catora_user_profiles` (`profile_id`, `user_id`, `artist_name`, `description`, `profile_image_url`, `background_image_url`) VALUES
+	(3, 5, 'John Doe', 'Lorem ipsum description', 'url_to_profile_image', 'url_to_background_image');
 
 -- Dumping structure for table catora.messages
 CREATE TABLE IF NOT EXISTS `messages` (
@@ -65,7 +69,7 @@ CREATE TABLE IF NOT EXISTS `messages` (
   `sender_id` int DEFAULT NULL,
   `receiver_id` int DEFAULT NULL,
   `message_text` text,
-  `file_url` varchar(255) DEFAULT NULL,
+  `file_url` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
   `sent_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`message_id`),
   KEY `sender_id` (`sender_id`),
