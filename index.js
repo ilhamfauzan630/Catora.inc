@@ -1,9 +1,7 @@
 const express = require('express');
-const http = require('http');
 const bodyParser = require('body-parser');
 const authController = require('./Back-End/Auth/authController');
 const profileController = require('./Back-End/Profile/profileController');
-const initializeSocket = require('./Back-End/Chat/socketController');
 const uploadController = require('./Back-End/Upload/uploadController');
 
 const app = express();
@@ -15,6 +13,6 @@ app.use('/auth', authController);
 app.use('/profile', profileController);
 app.use('/upload', uploadController);
 
-server.listen(port, () => {
+app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
