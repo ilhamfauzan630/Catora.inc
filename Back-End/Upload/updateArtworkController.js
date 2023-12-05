@@ -46,7 +46,6 @@ router.put('/artworks/:artwork_id', upload.single('image'), (req, res) => {
         SET title = ?, description = ?, tags = ?, image_url = ?, updated_at = CURRENT_TIMESTAMP
         WHERE artwork_id = ?`;
 
-
       db.query(updateQuery, [title, description, tags, image_url, artwork_id], (error, results) => {
         if (error) {
           console.error('Error updating artwork:', error);

@@ -18,8 +18,6 @@ const upload = multer({ storage });
 
 router.post('/artworks', upload.single('image'), (req, res) => {
   const { user_id, title, description, tags } = req.body;
-
-  // Validasi input
   if (!user_id || !title || !req.file) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
