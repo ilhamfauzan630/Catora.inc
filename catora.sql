@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS `artworks` (
   `tags` text,
   `image_url` varchar(255) NOT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`artwork_id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `artworks_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `catora_users` (`user_id`) ON DELETE CASCADE
@@ -40,11 +41,7 @@ CREATE TABLE IF NOT EXISTS `catora_users` (
   UNIQUE KEY `username` (`username`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table catora.catora_users: ~2 rows (approximately)
-INSERT INTO `catora_users` (`user_id`, `username`, `password_hash`, `created_at`) VALUES
-	(1, 'this', 'nameme', '2023-11-30 05:28:23'),
-	(3, 'hallo', 'nameme', '2023-11-30 06:13:23'),
-	(5, 'dapit', 'disini', '2023-11-30 07:30:28');
+-- Dumping data for table catora.catora_users: ~0 rows (approximately)
 
 -- Dumping structure for table catora.catora_user_profiles
 CREATE TABLE IF NOT EXISTS `catora_user_profiles` (
@@ -54,14 +51,14 @@ CREATE TABLE IF NOT EXISTS `catora_user_profiles` (
   `description` text,
   `profile_image_url` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
   `background_image_url` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`profile_id`),
   UNIQUE KEY `user_id` (`user_id`),
   CONSTRAINT `catora_user_profiles_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `catora_users` (`user_id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Dumping data for table catora.catora_user_profiles: ~0 rows (approximately)
-INSERT INTO `catora_user_profiles` (`profile_id`, `user_id`, `artist_name`, `description`, `profile_image_url`, `background_image_url`) VALUES
-	(3, 5, 'John Doe', 'Lorem ipsum description', 'url_to_profile_image', 'url_to_background_image');
 
 -- Dumping structure for table catora.messages
 CREATE TABLE IF NOT EXISTS `messages` (

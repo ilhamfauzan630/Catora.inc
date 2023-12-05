@@ -1,24 +1,61 @@
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 const db = require('../connection');
+const { log } = require('console');
 
-router.put('/artworks/:artwork_id', (req, res) => {
+// Set up multer storage
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, `${process.cwd()}/Back-End/Upload/Art-Here`);
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.fieldname + "-" + Date.now() + path.extname(file.originalname));
+  },
+});
+
+const upload = multer({ storage: storage });
+
+router.put('/artworks/:artwork_id', upload.single('image'), (req, res) => {
   const { artwork_id } = req.params;
-  const { title, description, tags, image_url } = req.body;
+  const { title, description, tags } = req.body;
+  const image_url = req.file.path;
 
-  const updateQuery = `
-    UPDATE artworks
-    SET title = ?, description = ?, tags = ?, image_url = ?
-    WHERE artwork_id = ?
-  `;
-
-  db.query(updateQuery, [title, description, tags, image_url, artwork_id], (error, results) => {
+  // Get the artwork from the database
+  db.query('SELECT * FROM artworks WHERE artwork_id = ?', [artwork_id], (error, results) => {
     if (error) {
-      console.error('Error updating artwork:', error);
+      console.error('Error fetching artwork:', error);
       return res.status(500).json({ error: 'Internal Server Error' });
     }
 
-    res.status(200).json({ message: 'Artwork updated successfully' });
+    const artwork = results[0];
+
+
+
+    // Delete the old image file from the server
+    fs.unlink(artwork.image_url, (error) => {
+      if (error) {
+        console.error('Error deleting image file:', error);
+        return res.status(500).json({ error: 'Internal Server Error' });
+      }
+
+      // Update the artwork in the database
+      const updateQuery = `UPDATE artworks
+        SET title = ?, description = ?, tags = ?, image_url = ?, updated_at = CURRENT_TIMESTAMP
+        WHERE artwork_id = ?`;
+
+
+      db.query(updateQuery, [title, description, tags, image_url, artwork_id], (error, results) => {
+        if (error) {
+          console.error('Error updating artwork:', error);
+          return res.status(500).json({ error: 'Internal Server Error' });
+        }
+
+        res.status(200).json({ message: 'Artwork updated successfully' });
+      });
+    });
   });
 });
 

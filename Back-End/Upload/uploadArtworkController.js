@@ -1,56 +1,44 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../connection');
-const axios = require('axios');
-const fs = require('fs');
+const multer = require('multer');
 const path = require('path');
-const sharp = require('sharp');
+const fs = require('fs');
+const db = require('../connection');
 
-router.post('/artworks', async (req, res) => {
-  const { user_id, title, description, tags, image_url, maxDimension } = req.body;
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, path.join(process.cwd(), 'Back-End', 'Upload', 'Art-Here'));
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+  },
+});
+
+const upload = multer({ storage });
+
+router.post('/artworks', upload.single('image'), (req, res) => {
+  const { user_id, title, description, tags } = req.body;
+
+  // Validasi input
+  if (!user_id || !title || !req.file) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+
+  const image_url = req.file.path;
 
   const insertQuery = `
     INSERT INTO artworks (user_id, title, description, tags, image_url)
     VALUES (?, ?, ?, ?, ?)
   `;
 
-  try {
-    const imagePath = await processAndSaveImage(image_url, maxDimension);
+  db.query(insertQuery, [user_id, title, description, tags, image_url], (error, results) => {
+    if (error) {
+      console.error('Error creating artwork:', error);
+      return res.status(500).json({ error: 'Internal Server Error' });
+    }
 
-    db.query(insertQuery, [user_id, title, description, tags, imagePath], (error, results) => {
-      if (error) {
-        console.error('Error creating artwork:', error);
-        return res.status(500).json({ error: 'Internal Server Error' });
-      }
-
-      res.status(201).json({ message: 'Artwork uploaded successfully' });
-    });
-  } catch (error) {
-    console.error('Error processing image:', error);
-    return res.status(500).json({ error: 'Internal Server Error' });
-  }
+    res.status(201).json({ message: 'Artwork Uploaded successfully' });
+  });
 });
-
-async function processAndSaveImage(image_url, maxDimension) {
-  const response = await axios.get(image_url, { responseType: 'arraybuffer' });
-  const imageName = generateImageName();
-  const imagePathOriginal = path.join(__dirname, './artworks', imageName);
-  const imagePathProcessed = path.join(__dirname, './artworks', `processed_${imageName}`);
-
-  fs.writeFileSync(imagePathOriginal, Buffer.from(response.data, 'binary'));
-
-  await sharp(imagePathOriginal)
-    .resize({ width: maxDimension, height: maxDimension, fit: 'inside' })
-    .toFile(imagePathProcessed);
-
-  // fs.unlinkSync(imagePathOriginal);
-
-  return imagePathProcessed;
-}
-
-function generateImageName() {
-  const uniqueId = Date.now();
-  return `image_${uniqueId}.jpg`;
-}
 
 module.exports = router;

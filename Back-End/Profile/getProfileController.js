@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../connection');
+const { resolve } = require('url');
 
 router.get('/profile/:user_id', (req, res) => {
   const { user_id } = req.params;
@@ -18,6 +19,16 @@ router.get('/profile/:user_id', (req, res) => {
     }
 
     const userProfile = results[0];
+
+    // Menambahkan URL lengkap untuk gambar dari folder lokal
+    userProfile.profile_image_url = userProfile.profile_image_url
+      ? resolve('http://localhost:3000', userProfile.profile_image_url)
+      : null;
+
+    userProfile.background_image_url = userProfile.background_image_url
+      ? resolve('http://localhost:3000', userProfile.background_image_url)
+      : null;
+
     res.status(200).json(userProfile);
   });
 });

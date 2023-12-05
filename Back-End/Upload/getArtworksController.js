@@ -1,6 +1,10 @@
 const express = require('express');
+const path = require('path');
 const router = express.Router();
 const db = require('../connection');
+const { resolve } = require('url');
+
+router.use('/images', express.static(path.join(__dirname, '../Back-End/Upload/Art-Here')));
 
 router.get('/artworks', (req, res) => {
   const selectQuery = `
@@ -13,7 +17,17 @@ router.get('/artworks', (req, res) => {
       return res.status(500).json({ error: 'Internal Server Error' });
     }
 
-    res.status(200).json(results);
+    // Menambahkan URL lengkap untuk gambar dari folder lokal
+    const artworksWithResolvedUrls = results.map((artwork) => {
+      return {
+        ...artwork,
+        image_url: artwork.image_url
+          ? resolve('http://localhost:3000', artwork.image_url)
+          : null,
+      };
+    });
+
+    res.status(200).json(artworksWithResolvedUrls);
   });
 });
 
