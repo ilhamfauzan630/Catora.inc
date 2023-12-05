@@ -20,7 +20,6 @@ router.get('/profile/:user_id', (req, res) => {
 
     const userProfile = results[0];
 
-    // Menambahkan URL lengkap untuk gambar dari folder lokal
     userProfile.profile_image_url = userProfile.profile_image_url
       ? resolve('http://localhost:3000', userProfile.profile_image_url)
       : null;
